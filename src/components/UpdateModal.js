@@ -14,10 +14,26 @@ import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider'
 import { DatePicker } from '@mui/x-date-pickers/DatePicker'
 import dayjs from 'dayjs'
 import supabase from '@/supabase'
+import axios from 'axios'
+import FileBase from 'react-file-base64'
 
 const UpdateDialog = ({ open, handleClose, prefillData, setRefresh }) => {
   const [data, setData] = useState(prefillData)
-
+  const imageUpload = async (image) => {
+    const formData = new FormData()
+    formData.append('file', image)
+    formData.append('upload_preset', 'zqdcv17y')
+    try {
+      const res = await axios.post(
+        'https://api.cloudinary.com/v1_1/dp9idaxnh/image/upload',
+        formData
+      )
+      console.log(res.data.secure_url)
+      return res.data.secure_url
+    } catch (err) {
+      return false
+    }
+  }
   useEffect(() => {
     setData(prefillData)
   }, [prefillData])
@@ -33,6 +49,7 @@ const UpdateDialog = ({ open, handleClose, prefillData, setRefresh }) => {
       supervisor_name: data?.supervisor_name || null,
       project_name: data?.project_name || null,
       id: prefillData?.id,
+      image: data?.image,
     }
 
     try {
@@ -128,6 +145,29 @@ const UpdateDialog = ({ open, handleClose, prefillData, setRefresh }) => {
               setData((prev) => ({ ...prev, project_name: e.target.value }))
             }
             sx={{ marginBottom: '8px' }}
+          />
+          <FileBase
+            type="file"
+            required
+            multiple={false}
+            onDone={async ({ base64, size, type }) => {
+              const sizeinkb = Number(size.replace('kB', ''))
+              console.log(sizeinkb)
+              if (
+                type === 'image/png' ||
+                type === 'image/jpeg' ||
+                type === 'image/webp'
+              ) {
+                if (sizeinkb <= 150) {
+                  const url = await imageUpload(base64)
+                  setData((prev) => ({ ...prev, image: url }))
+                } else {
+                  alert('Please select  file size less than 150kb')
+                }
+              } else {
+                console.log('error')
+              }
+            }}
           />
         </Box>
       </DialogContent>

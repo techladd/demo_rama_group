@@ -4,7 +4,7 @@ import NavBar from '@/components/NavBar'
 import supabase from '@/supabase'
 import Image from 'next/image'
 import React, { useEffect, useState } from 'react'
-
+const secretKey = 'your_secret_key'
 const Index = () => {
   const [data, setData] = useState(null)
   useEffect(() => {
@@ -14,7 +14,9 @@ const Index = () => {
         const { data: status, error } = await supabase
           .from('status')
           .select('*')
-        console.log('data', status)
+          .headers({
+            'X-Secret-Key': secretKey,
+          })
 
         if (error) {
           console.error('Error fetching data:', error)

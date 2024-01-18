@@ -8,6 +8,13 @@ import DonutChart from '@/components/Charts'
 import YourComponent from '@/components/UpdateModal'
 import UpdateDialog from '@/components/UpdateModal'
 import supabase from '@/supabase'
+import 'swiper/css'
+import { Swiper, SwiperSlide } from 'swiper/react'
+import SwiperCore, { Navigation, Pagination, Autoplay } from 'swiper'
+import 'swiper/css/navigation'
+
+// install Swiper modules
+SwiperCore.use([Navigation, Pagination, Autoplay])
 const Index = () => {
   const [dialogOpen, setDialogOpen] = useState(false)
   const [data, setData] = useState(null)
@@ -44,6 +51,22 @@ const Index = () => {
   const handleCloseDialog = () => {
     setDialogOpen(false)
   }
+
+  console.log('allData', data)
+
+  const imagesData = [
+    data?.image,
+    'https://res.cloudinary.com/dp9idaxnh/image/upload/v1705495923/ug06ir4fuo6j3d9au6ee.jpg',
+    'https://res.cloudinary.com/dp9idaxnh/image/upload/v1705495910/gb1lrscudpx3qo5abfim.jpg',
+    'https://images.indianexpress.com/2023/07/panchkula-1200.jpg',
+    'https://res.cloudinary.com/dp9idaxnh/image/upload/v1705496318/ypg31ej5lomob3iu4nbo.jpg',
+  ]
+
+  const handleSlideChange = (swiper) => {
+    console.log('Current slide index:', swiper.activeIndex)
+    // You can perform additional actions here if needed
+  }
+
   return (
     <div className="flex flex-col">
       <MobileNavBar />
@@ -84,8 +107,30 @@ const Index = () => {
         <p className="text-[12px] my-[20px]">
           {`Completion Status:  ${data?.progress} %`}
         </p>
-        <div className="my-[20px] mx-[-10px]">
-          <img src="/images.png" alt="graph" />
+        <div className="my-[20px] px-[-10px] bg-[#F5F5F5] ">
+          <p className="my-[10px] px-[10px] font-semibold ">Gallery</p>
+          {/* <img src={data?.image} alt="graph" /> */}
+          <Swiper
+            spaceBetween={2}
+            slidesPerView={2}
+            onSlideChange={handleSlideChange}
+            onSwiper={(swiper) => console.log(swiper)}
+          >
+            {imagesData.map((image, index) => (
+              <SwiperSlide key={index}>
+                <img
+                  src={image}
+                  style={{
+                    objectFit: 'cover',
+                    padding: '10px',
+                    width: '144px',
+                    height: '109px',
+                  }}
+                  alt={`Slide ${index + 1}`}
+                />
+              </SwiperSlide>
+            ))}
+          </Swiper>
         </div>
         <div className="flex items-center justify-center">
           <Button
